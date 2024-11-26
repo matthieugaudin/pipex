@@ -1,20 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
+/*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/14 17:05:37 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/10/19 19:46:50 by mgaudin          ###   ########.fr       */
+/*   Created: 2024/11/21 20:00:41 by mgaudin           #+#    #+#             */
+/*   Updated: 2024/11/22 16:39:02 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef PIPEX_H
+# define PIPEX_H
 
-void	ft_putstr_fd(char *s, int fd)
-{
-	if (!s)
-		return ;
-	write(fd, s, ft_strlen(s));
-}
+# include "../libft/libft.h"
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <fcntl.h>
+#include <stdio.h>
+
+int	open_fd(char *fd, int is_in);
+char **get_envp_paths(char *cmd, char **envp);
+
+#endif /* PIPEX_H */
