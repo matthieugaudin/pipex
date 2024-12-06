@@ -6,7 +6,7 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 18:04:12 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/04 11:53:44 by mgaudin          ###   ########.fr       */
+/*   Updated: 2024/12/06 12:23:25 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ static char	*ft_get_envp_path(char **envp)
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 		{
 			envp_path = ft_strdup(envp[i] + 5);
+			if (!envp_path)
+				return (NULL);
 			return (envp_path);
 		}
 		i++;
@@ -36,7 +38,7 @@ static char	**ft_append_to_each_subtab(char **bin_paths, char *str)
 	char	*tmp;
 	int		i;
 
-	if (!bin_paths)
+	if (!bin_paths || !str)
 		return (NULL);
 	i = 0;
 	while (bin_paths[i] != NULL)
@@ -60,53 +62,66 @@ static char	**get_bin_paths(char *cmd, char **envp)
 	char	*envp_path;
 	char	**bin_paths;
 
+	if (!cmd)
+		return (NULL);
 	envp_path = ft_get_envp_path(envp);
 	if (!envp_path)
 		return (NULL);
-	bin_paths = ft_split(envp_path, ':');
+	if (cmd[0] == '/')
+	{
+		bin_paths = ft_split(cmd, ' ');
+	}
+	else
+	{
+		bin_paths = ft_split(envp_path, ':');
+		bin_paths = ft_append_to_each_subtab(bin_paths, "/");
+		bin_paths = ft_append_to_each_subtab(bin_paths, cmd);
+	}
 	free(envp_path);
 	if (!bin_paths)
 		return (NULL);
-	bin_paths = ft_append_to_each_subtab(bin_paths, "/");
-	bin_paths = ft_append_to_each_subtab(bin_paths, cmd);
 	return (bin_paths);
 }
 
-static char	*ft_get_access_path(char **paths)
+static char	*ft_get_access_path(t_pipex *pipex, char **paths)
 {
+	char	*access_path;
 	size_t	i;
 
+	if (!paths)
+		return (NULL);
 	i = 0;
+	access_path = NULL;
 	while (paths[i])
 	{
 		if (access(paths[i], X_OK) == 0)
 		{
-			return (ft_strdup(paths[i]));
-			// si dup fail il renvoie NULL car dup est portéger
-			// trouver une solution pour décoréler le fail de dup et l'acces non-existing
+			access_path = ft_strdup(paths[i]);
+			if (!access_path)
+				return (NULL);
+			return (access_path);
 		}
 		i++;
 	}
-	return (NULL);
+	return (access_path);
 }
 
-void    ft_parse_paths(t_pipex *pipex, char **envp)
+void	ft_parse_paths(t_pipex *pipex, char **envp)
 {
-    char	**cmd1_paths;
-    char	**cmd2_paths;
+	char	**cmd1_paths;
+	char	**cmd2_paths;
 
-	if (pipex->cmds_args[0][0][0] == '/')
+	pipex->cmds_path = malloc(sizeof(char *) * 3);
+	if (!pipex->cmds_path)
 	{
-		pipex->cmds_path[0] = ft_strdup(pipex->cmds_args[0][0]);// to protect
-		pipex->cmds_path[1] = ft_strdup(pipex->cmds_args[1][0]);// to protect
+		ft_clean(pipex);
+		ft_fail("malloc", 1);
 	}
-	else
-	{	
-		cmd1_paths = get_bin_paths(pipex->cmds_args[0][0], envp); // to protect
-		cmd2_paths = get_bin_paths(pipex->cmds_args[1][0], envp); // to protect
-		pipex->cmds_path[0] = ft_get_access_path(cmd1_paths);
-		pipex->cmds_path[1] = ft_get_access_path(cmd2_paths); // not to protect it's settle by the function
-		free_tab(cmd1_paths);
-		free_tab(cmd2_paths);
-	}
+	pipex->cmds_path[2] = NULL;
+	cmd1_paths = get_bin_paths(pipex->cmds_args[0][0], envp);
+	cmd2_paths = get_bin_paths(pipex->cmds_args[1][0], envp);
+	pipex->cmds_path[0] = ft_get_access_path(pipex, cmd1_paths);
+	pipex->cmds_path[1] = ft_get_access_path(pipex, cmd2_paths);
+	free_tab(cmd1_paths);
+	free_tab(cmd2_paths);
 }
