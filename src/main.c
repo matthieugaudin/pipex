@@ -6,7 +6,7 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 17:20:55 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/06 12:26:07 by mgaudin          ###   ########.fr       */
+/*   Updated: 2024/12/11 12:26:53 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,5 @@ int	main(int ac, char **av, char **envp)
 	ft_exec(pipex, 0, envp);
 	ft_exec(pipex, 1, envp);
 	ft_clean(pipex);
+	return (0);
 }
