@@ -6,7 +6,7 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 19:48:36 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/09 15:19:45 by mgaudin          ###   ########.fr       */
+/*   Updated: 2024/12/12 18:41:05 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ static void	ft_close_pipes(t_pipex *pipex)
 		close(pipex->pipes[i][1]);
 		i++;
 	}
+	close(pipex->fd_in);
+	close(pipex->fd_out);
 }
 
 static void	ft_redirect_fds(t_pipex *pipex, int i, pid_t *pids)
@@ -66,7 +68,7 @@ static void	ft_wait_pids(t_pipex *pipex, pid_t *pids)
 	int	i;
 
 	i = 0;
-	while (i < pipex->nb_cmds - 1)
+	while (i < pipex->nb_cmds)
 	{
 		waitpid(pids[i], &status, 0);
 		if (WEXITSTATUS(status))
