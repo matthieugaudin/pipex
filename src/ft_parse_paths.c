@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/30 18:04:12 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/06 12:23:25 by mgaudin          ###   ########.fr       */
+/*   Created: 2024/12/08 19:23:27 by mgaudin           #+#    #+#             */
+/*   Updated: 2024/12/12 19:09:26 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ static char	**get_bin_paths(char *cmd, char **envp)
 	return (bin_paths);
 }
 
-static char	*ft_get_access_path(t_pipex *pipex, char **paths)
+static char	*ft_get_access_path(char **paths)
 {
 	char	*access_path;
 	size_t	i;
@@ -108,20 +108,19 @@ static char	*ft_get_access_path(t_pipex *pipex, char **paths)
 
 void	ft_parse_paths(t_pipex *pipex, char **envp)
 {
-	char	**cmd1_paths;
-	char	**cmd2_paths;
+	char	**cmd_paths;
+	int		i;
 
-	pipex->cmds_path = malloc(sizeof(char *) * 3);
+	pipex->cmds_path = malloc(sizeof(char *) * (pipex->nb_cmds + 1));
 	if (!pipex->cmds_path)
-	{
-		ft_clean(pipex);
-		ft_fail("malloc", 1);
-	}
+		ft_fail_and_clean(pipex, "malloc", 1);
 	pipex->cmds_path[2] = NULL;
-	cmd1_paths = get_bin_paths(pipex->cmds_args[0][0], envp);
-	cmd2_paths = get_bin_paths(pipex->cmds_args[1][0], envp);
-	pipex->cmds_path[0] = ft_get_access_path(pipex, cmd1_paths);
-	pipex->cmds_path[1] = ft_get_access_path(pipex, cmd2_paths);
-	free_tab(cmd1_paths);
-	free_tab(cmd2_paths);
+	i = 0;
+	while (i < pipex->nb_cmds)
+	{
+		cmd_paths = get_bin_paths(pipex->cmds_args[i][0], envp);
+		pipex->cmds_path[i] = ft_get_access_path(cmd_paths);
+		free_tab(cmd_paths);
+		i++;
+	}
 }

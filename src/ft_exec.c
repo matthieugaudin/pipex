@@ -5,66 +5,101 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/30 18:04:18 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/06 12:04:38 by mgaudin          ###   ########.fr       */
+/*   Created: 2024/12/08 19:48:36 by mgaudin           #+#    #+#             */
+/*   Updated: 2024/12/12 20:02:55 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/pipex.h"
 
-static void	ft_redirect_fds(t_pipex *pipex, int end[2], int index)
+static void	ft_close_pipes(t_pipex *pipex)
 {
-	if (index == 0)
+	int	i;
+
+	i = 0;
+	while (i < pipex->nb_cmds - 1)
 	{
-		if (dup2(pipex->fd_in, 0) == -1 || dup2(end[1], 1) == -1)
-			ft_fail_and_cleanfd(pipex, "dup2", 1, end);
+		close(pipex->pipes[i][0]);
+		close(pipex->pipes[i][1]);
+		i++;
 	}
-	else
-	{
-		if (dup2(end[0], 0) == -1 || dup2(pipex->fd_out, 1) == -1)
-			ft_fail_and_cleanfd(pipex, "dup2", 1, end);
-	}
-	close(end[0]);
-	close(end[1]);
+	close(pipex->fd_in);
+	close(pipex->fd_out);
 }
 
-static void	ft_exec_cmd(t_pipex *pipex, char **envp, int index)
+static void	ft_redirect_fds(t_pipex *pipex, int i, pid_t *pids)
+{
+	if (i == 0)
+	{
+		if (dup2(pipex->fd_in, 0) == -1 || dup2(pipex->pipes[i][1], 1) == -1)
+			ft_fail_and_clean_pids(pipex, "dup2", 1, pids);
+	}
+	else if (i == pipex->nb_cmds - 1)
+	{
+		if (dup2(pipex->pipes[i - 1][0], 0) == -1 ||
+			dup2(pipex->fd_out, 1) == -1)
+			ft_fail_and_clean_pids(pipex, "dup2", 1, pids);
+	}
+	ft_close_pipes(pipex);
+}
+
+static void	ft_exec_cmd(t_pipex *pipex, char **envp, int i, pid_t *pids)
 {
 	char	*path;
 	char	**args;
 
-	path = pipex->cmds_path[index];
-	args = pipex->cmds_args[index];
+	path = pipex->cmds_path[i];
+	args = pipex->cmds_args[i];
 	if (path == NULL)
-		ft_fail_and_clean(pipex, "Command not found", 127);
+		ft_fail_and_clean_pids(pipex, "Command not found", 127, pids);
 	if (execve(path, args, envp) == -1)
-		ft_fail_and_clean(pipex, "execve", 127);
+		ft_fail_and_clean_pids(pipex, "execve", 127, pids);
 }
 
-void	ft_exec(t_pipex *pipex, int index, char **envp)
+static void	ft_wait_pids(t_pipex *pipex, pid_t *pids)
 {
-	pid_t		pid;
-	static int	end[2];
-	int			status;
+	int	status;
+	int	i;
 
-	if (index == 0)
+	i = 0;
+	while (i < pipex->nb_cmds)
 	{
-		if (pipe(end) == -1)
-			ft_fail_and_cleanfd(pipex, "pipe", 1, end);
+		waitpid(pids[i], &status, 0);
+		if (WEXITSTATUS(status))
+		{
+			free(pids);
+			ft_clean(pipex);
+			exit(WEXITSTATUS(status));
+		}
+		i++;
 	}
-	pid = fork();
-	if (pid == -1)
-		ft_fail_and_cleanfd(pipex, "fork", 1, end);
-	else if (pid == 0)
+	free(pids);
+}
+
+void	ft_exec(t_pipex *pipex, char **envp)
+{
+	pid_t	*pids;
+	int		i;
+
+	pids = malloc(sizeof(pid_t) * pipex->nb_cmds);
+	if (!pids)
+		ft_fail_and_clean(pipex, "malloc", 1);
+	i = 0;
+	while (i < pipex->nb_cmds)
 	{
-		ft_redirect_fds(pipex, end, index);
-		ft_exec_cmd(pipex, envp, index);
+		pids[i] = fork();
+		if (pids[i] == -1)
+			ft_fail_and_clean_pids(pipex, "fork", 1, pids);
+		else if (pids[i] == 0)
+		{
+			ft_redirect_fds(pipex, i, pids);
+			ft_exec_cmd(pipex, envp, i, pids);
+		}
+		if (i != 0)
+			close(pipex->pipes[i - 1][0]);
+		if (i != pipex->nb_cmds - 1)
+			close(pipex->pipes[i][1]);
+		i++;
 	}
-	if (index == 0)
-		close(end[1]);
-	if (index == 1)
-		close(end[0]);
-	waitpid(pid, &status, 0);
-	if (WEXITSTATUS(status))
-		ft_clean_and_exit(pipex, WEXITSTATUS(status), end);
+	ft_wait_pids(pipex, pids);
 }

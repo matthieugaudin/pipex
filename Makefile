@@ -5,7 +5,7 @@ LIBFT = libft.a
 LIBFT_DIR = libft
 
 SRC =	src/main.c src/ft_clean.c src/ft_exec.c src/ft_init_pipex.c src/ft_parse_args.c \
-		src/ft_parse_paths.c src/utils.c src/utils_1.c
+		src/ft_parse_paths.c src/utils.c src/utils_1.c src/ft_create_pipes.c 
 
 SRC_BONUS = src_bonus/main_bonus.c src_bonus/utils_bonus.c src_bonus/utils_1_bonus.c \
 			src_bonus/ft_parse_paths_bonus.c src_bonus/ft_parse_args_bonus.c \
