@@ -6,13 +6,13 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 18:55:20 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/13 18:00:14 by mgaudin          ###   ########.fr       */
+/*   Updated: 2024/12/13 19:14:58 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include_bonus/pipex_bonus.h"
 
-static void	ft_fill_here_doc(char *del, int fd)
+static void	ft_fill_here_doc(t_pipex *pipex, char *del, int fd)
 {
 	char	*str;
 	char	*read;
@@ -21,6 +21,13 @@ static void	ft_fill_here_doc(char *del, int fd)
 	{
 		ft_putstr_fd("> ", 0);
 		read = get_next_line(0, 5, 0);
+		if (!read)
+		{
+			close(pipex->fd_out);
+			close(fd);
+			free(pipex);
+			ft_fail("malloc", 1);
+		}
 		str = ft_substr(read, 0, ft_strlen(read) - 1);
 		if (ft_strcmp(str, del) == 0)
 			break ;
@@ -47,12 +54,12 @@ int	ft_open_fd(t_pipex *pipex, char **av, char *file_path, int is_fd_in)
 {
 	int	fd;
 
-	if (is_fd_in != 0)
+	if (is_fd_in)
 	{
 		if (pipex->is_heredoc)
 		{
 			fd = open("/tmp/heredoc.tmp", O_WRONLY | O_CREAT | O_TRUNC, 0777);
-			ft_fill_here_doc(av[2], fd);
+			ft_fill_here_doc(pipex, av[2], fd);
 			fd = open("/tmp/heredoc.tmp", O_RDONLY);
 		}
 		else
