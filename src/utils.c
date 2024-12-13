@@ -6,13 +6,13 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 18:55:20 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/12 19:54:18 by mgaudin          ###   ########.fr       */
+/*   Updated: 2024/12/13 18:11:08 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/pipex.h"
 
-int	ft_open_fd(t_pipex *pipex, char *file_path, int is_fd_in)
+int	ft_open_fd(char *file_path, int is_fd_in)
 {
 	int	fd;
 

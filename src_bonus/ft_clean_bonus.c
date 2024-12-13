@@ -6,7 +6,7 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 21:15:35 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/12 20:13:32 by mgaudin          ###   ########.fr       */
+/*   Updated: 2024/12/13 17:59:03 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ void	ft_clean(t_pipex *pipex)
 {
 	close(pipex->fd_in);
 	close(pipex->fd_out);
+	if (pipex->is_heredoc)
+		unlink("/tmp/heredoc.tmp");
 	ft_free_cmds_args(pipex);
 	if (pipex->cmds_path)
 		free_tab_size(pipex->cmds_path, pipex->nb_cmds);

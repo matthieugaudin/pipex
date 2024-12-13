@@ -6,7 +6,7 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 19:03:49 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/09 15:20:32 by mgaudin          ###   ########.fr       */
+/*   Updated: 2024/12/13 13:24:17 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void	ft_fill_cmds_args(t_pipex *pipex, char **av)
 	i = 0;
 	while (i < pipex->nb_cmds)
 	{
-		pipex->cmds_args[i] = ft_split(av[i + 2], ' ');
+		pipex->cmds_args[i] = ft_split(av[i + 2 + pipex->is_heredoc], ' ');
 		if (!pipex->cmds_args[i])
 			ft_fail_and_clean(pipex, "malloc", 1);
 		i++;
@@ -28,7 +28,10 @@ static void	ft_fill_cmds_args(t_pipex *pipex, char **av)
 
 void	ft_parse_args(t_pipex *pipex, char **av, int ac)
 {
-	pipex->nb_cmds = ac - 3;
+	if (pipex->is_heredoc)
+		pipex->nb_cmds = 2;
+	else
+		pipex->nb_cmds = ac - 3;
 	pipex->cmds_args = malloc(sizeof(char **) * (pipex->nb_cmds + 1));
 	if (!pipex->cmds_args)
 		ft_fail_and_clean(pipex, "malloc", 1);

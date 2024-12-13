@@ -1,27 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main_bonus.c                                       :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/08 18:36:31 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/13 17:59:52 by mgaudin          ###   ########.fr       */
+/*   Created: 2024/12/13 13:00:05 by mgaudin           #+#    #+#             */
+/*   Updated: 2024/12/13 13:00:28 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include_bonus/pipex_bonus.h"
+#include "libft.h"
 
-int	main(int ac, char **av, char **envp)
+int	ft_strcmp(char *s1, char *s2)
 {
-	t_pipex	*pipex;
+	int	i;
 
-	ft_check_ac(av, ac);
-	ft_init_pipex(&pipex, av, ac);
-	ft_parse_args(pipex, av, ac);
-	ft_parse_paths(pipex, envp);
-	ft_create_pipes(pipex);
-	ft_exec(pipex, envp);
-	ft_clean(pipex);
-	return (0);
+	i = 0;
+	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
+		i++;
+	return (s1[i] - s2[i]);
 }

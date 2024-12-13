@@ -6,7 +6,7 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 18:36:40 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/09 15:25:26 by mgaudin          ###   ########.fr       */
+/*   Updated: 2024/12/13 13:39:44 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,18 @@ typedef struct s_pipex
 	int		fd_in;
 	int		fd_out;
 	int		nb_cmds;
+	int		is_heredoc;
 	int		**pipes;
 	char	**cmds_path;
 	char	***cmds_args;
 }	t_pipex;
 
-void	ft_check_ac(int ac);
+void	ft_check_ac(char **av, int ac);
+char	*get_next_line(int fd, int size, int to_clean);
+void	ft_to_clean(char **pstash);
 void	free_tab(char **tab);
 void	ft_fail(char *error_message, int exit_status);
-int		ft_open_fd(t_pipex *pipex, char *file_path, int is_fd_in);
+int		ft_open_fd(t_pipex *pipex, char **av, char *file_path, int is_fd_in);
 void	ft_init_pipex(t_pipex **pipex, char **av, int ac);
 void	ft_parse_args(t_pipex *pipex, char **av, int ac);
 void	ft_parse_paths(t_pipex *pipex, char **envp);

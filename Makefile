@@ -10,7 +10,8 @@ SRC =	src/main.c src/ft_clean.c src/ft_exec.c src/ft_init_pipex.c src/ft_parse_a
 SRC_BONUS = src_bonus/main_bonus.c src_bonus/utils_bonus.c src_bonus/utils_1_bonus.c \
 			src_bonus/ft_parse_paths_bonus.c src_bonus/ft_parse_args_bonus.c \
 			src_bonus/ft_init_pipex_bonus.c src_bonus/ft_exec_bonus.c \
-			src_bonus/ft_create_pipes_bonus.c src_bonus/ft_clean_bonus.c
+			src_bonus/ft_create_pipes_bonus.c src_bonus/ft_clean_bonus.c \
+			src_bonus/get_next_line_bonus.c
 
 OBJ = $(SRC:.c=.o)
 OBJ_BONUS = $(SRC_BONUS:.c=.o)

@@ -6,7 +6,7 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 18:36:40 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/12 19:10:03 by mgaudin          ###   ########.fr       */
+/*   Updated: 2024/12/13 18:11:15 by mgaudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ typedef struct s_pipex
 void	ft_check_ac(int ac);
 void	free_tab(char **tab);
 void	ft_fail(char *error_message, int exit_status);
-int		ft_open_fd(t_pipex *pipex, char *file_path, int is_fd_in);
+int		ft_open_fd(char *file_path, int is_fd_in);
 void	ft_init_pipex(t_pipex **pipex, char **av, int ac);
 void	ft_parse_args(t_pipex *pipex, char **av, int ac);
 void	ft_parse_paths(t_pipex *pipex, char **envp);
