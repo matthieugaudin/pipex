@@ -7,17 +7,17 @@ The program must reproduce the behavior of the following shell command:
 $ < infile cmd1 | cmd2 | ... | cmdn > outfile
 ```
 
-The equivalent with the executable is :
+The equivalent with the executable is:
 ```bash
 $ ./pipex "cmd1" "cmd2" "cmdn" outfile
 ```
 
-It also supports here documents behavior :
+It also supports here document behavior:
 ```bash
 $ cmd1 << LIMITER | cmd2 >> file
 ```
 
-The equivalent with the executable is :
+The equivalent with the executable is:
 ```bash
 $ ./pipex here_doc LIMITER cmd1 cmd2 file
 ```
@@ -37,14 +37,15 @@ pipex/
 └── README.md
 ```
 
-# Features
+## Features
 
-- Multi-processes program
-- Execute commands with input/output redirection.
-- Support for single and multiple pipes.
-- Handles errors (invalid commands, file access issues, etc.).
-- Clean memory management.
-- Supports here documents for 2 commands
+- Multi-process program.  
+- Executes commands with input and output redirection.  
+- Supports single and multiple pipes.  
+- Handles errors (invalid commands, file access issues, etc.).  
+- Ensures clean memory management.  
+- Supports here documents for two commands.  
+
 
 ## How Pipex Works
 
@@ -62,32 +63,30 @@ pipex/
 - Executes each process using `execve`.
   
 
-# Installation and Usage
-Clone the repository:
+# Installation and Usage  
+
+
+1. Clone the repository:
+```bash
 git clone https://github.com/matthieugaudin/pipex.git
 cd pipex
+```
 
-
-Compile the project:
-
+2. Compile the project:
+```bash
 make
+```
 
+3. Display the helper:
+```bash
+./pipex
+```
 
-Run the program:
+4. Run the program:
 
 ./pipex file1 "cmd1" "cmd2" file2
 
 
-Example:
-
-./pipex infile "ls -l" "grep pipex" outfile
-
-
-This is equivalent to:
-
-< infile ls -l | grep pipex > outfile
-
-
 ## Conclusion
 
-Pipex provides a hands-on experience with Unix process management, inter-process communication, and file descriptor manipulation. It is an essential step to understanding how shells handle pipelines and lays the foundation for more advanced shell projects like minishell.
+I really enjoyed working on Pipex because I learned a lot about inter-process communication, memory management, system calls, and file handling. This project was also an excellent introduction and a strong foundation for working on Minishell.
