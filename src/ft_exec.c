@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   ft_exec.c                                          :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 19:48:36 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/12 20:02:55 by mgaudin          ###   ########.fr       */
+/*   Updated: 2025/10/18 10:12:59 by mgaudin          ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/pipex.h"
 
@@ -38,6 +38,12 @@ static void	ft_redirect_fds(t_pipex *pipex, int i, pid_t *pids)
 	{
 		if (dup2(pipex->pipes[i - 1][0], 0) == -1 ||
 			dup2(pipex->fd_out, 1) == -1)
+			ft_fail_and_clean_pids(pipex, "dup2", 1, pids);
+	}
+	else
+	{
+		if (dup2(pipex->pipes[i - 1][0], 0) == -1 ||
+			dup2(pipex->pipes[i][1], 1) == -1)
 			ft_fail_and_clean_pids(pipex, "dup2", 1, pids);
 	}
 	ft_close_pipes(pipex);

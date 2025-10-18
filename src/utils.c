@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
@@ -6,44 +6,77 @@
 /*   By: mgaudin <mgaudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 18:55:20 by mgaudin           #+#    #+#             */
-/*   Updated: 2024/12/13 18:11:08 by mgaudin          ###   ########.fr       */
+/*   Updated: 2025/10/18 10:13:21 by mgaudin          ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../include/pipex.h"
 
-int	ft_open_fd(char *file_path, int is_fd_in)
+static void	ft_fill_here_doc(t_pipex *pipex, char *del, int fd)
+{
+	char	*str;
+	char	*read;
+
+	while (1)
+	{
+		ft_putstr_fd("> ", 0);
+		read = get_next_line(0, 5, 0);
+		if (!read)
+		{
+			close(pipex->fd_out);
+			close(fd);
+			free(pipex);
+			ft_fail("malloc", 1);
+		}
+		str = ft_substr(read, 0, ft_strlen(read) - 1);
+		if (ft_strcmp(str, del) == 0)
+			break ;
+		write(fd, read, ft_strlen(read));
+		free(read);
+		free(str);
+	}
+	get_next_line(0, 5, 1);
+	free(read);
+	free(str);
+	close(fd);
+}
+
+static int	ft_handle_fd(char *file_path)
 {
 	int	fd;
 
-	if (is_fd_in != 0)
-	{
-		fd = open(file_path, O_RDONLY);
-		if (fd == -1)
-		{
-			perror(file_path);
-			fd = open("/dev/null", O_RDONLY);
-		}
-	}
-	else
-	{
-		fd = open(file_path, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-		if (fd == -1)
-		{
-			perror(file_path);
-			fd = open("/dev/null", O_RDONLY);
-		}
-	}
+	perror(file_path);
+	fd = open("/dev/null", O_RDONLY);
 	return (fd);
 }
 
-void	ft_check_ac(int ac)
+int	ft_open_fd(t_pipex *pipex, char **av, char *file_path, int is_fd_in)
 {
-	if (ac != 5)
+	int	fd;
+
+	if (is_fd_in)
 	{
-		ft_putstr_fd("./pipex infile cmd1 cmd2 outfile", 2);
-		exit(1);
+		if (pipex->is_heredoc)
+		{
+			fd = open("/tmp/heredoc.tmp", O_WRONLY | O_CREAT | O_TRUNC, 0777);
+			ft_fill_here_doc(pipex, av[2], fd);
+			fd = open("/tmp/heredoc.tmp", O_RDONLY);
+		}
+		else
+			fd = open(file_path, O_RDONLY);
+		if (fd == -1)
+			fd = ft_handle_fd(file_path);
 	}
+	else
+	{
+		if (pipex->is_heredoc)
+			fd = open(file_path, O_RDWR | O_CREAT | O_APPEND, 0777);
+		else
+			fd = open(file_path, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+		if (fd == -1)
+			fd = ft_handle_fd(file_path);
+	}
+	return (fd);
 }
 
 void	free_tab(char **tab)
