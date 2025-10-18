@@ -83,9 +83,16 @@ make
 ```
 
 4. Run the program:
-
-./pipex file1 "cmd1" "cmd2" file2
-
+```bash
+./pipex "nonexistingfile" "cat -e" "ls" outfile
+echo "this is a test" > infile | ./pipex infile "cat -e" "wc -c" outfile
+chmod 000 infile && ./pipex infile "cat -e" "wc -c" outfile
+chmod 777 infile && chmod 000 outfile && ./pipex infile "cat -e" "wc -c" outfile
+./pipex "infile" "cat -e" "grep is" "outfile"
+./pipex "infile" "nonexistingcommand" "grep this" "outfile"
+./pipex infile "cat -e" "cat -e" "cat -e" "cat -e" "cat -e" "cat -e" outfile
+./pipex here_doc LIMITER "cat -e" "wc -l" outfile
+```
 
 ## Conclusion
 
